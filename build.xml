@@ -1,0 +1,78 @@
+<project name="Paint" default="compile" basedir=".">
+
+    <property file="${user.home}/build.properties"/>
+    <property file="default.properties"/>
+
+    <path id="project.classpath">
+        <pathelement location="${classes.dir}"/>
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile"
+            description="Builds application ready to run locally">
+        
+        <mkdir dir="${classes.dir}"/>
+
+        <javac
+                includeantruntime="false"
+                srcdir="${src.dir}"
+                destdir="${classes.dir}"
+                debug="${compile.debug}"
+                deprecation="${compile.deprecation}"
+                optimize="${compile.optimize}">
+            <classpath refid="project.classpath"/>
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Xlint:-path"/>
+        </javac>
+        <copy todir="classes/edu/wcu/cs/cs263/honors/gui">
+             <fileset dir="src/main/resources/"/>
+        </copy>
+
+
+        <jar jarfile="./Paint.jar"
+             basedir="${classes.dir}">
+             <fileset dir="${classes.dir}"/>
+            <manifest>
+                <attribute name="Built-By" value="Tyler Allen, Alisha Hayman"/>
+                <attribute name="Main-Class" value="edu/wcu/cs/cs263/honors/MainDriver"/>
+                <attribute name="Class-Path" value="${class.dir}"/>
+            </manifest>
+        </jar>
+    </target>
+ 
+    <target name="doc"
+            depends="compile"
+            description="Create javadoc">
+        <mkdir dir="${docs.dir}"/>
+
+        <javadoc sourcepath="${src.dir}"
+                 destdir="${docs.dir}"
+                 packagenames="*"
+                 >
+               <fileset dir="${src.dir}">   
+               </fileset>
+            <tag name="version"/>
+            <tag name="author"/>
+            <tag name="param"/>
+            <tag name="precondition"  description="Preconditions:"
+                                            scope="constructors, methods"/>
+            <tag name="postcondition" description="Postconditions:"
+                                            scope="constructors, methods"/>
+            <tag name="preserves"     description="Preserves:"
+                                            scope="constructors, methods"/>
+            <tag name="return"/>
+            <tag name="throws"/>
+
+        </javadoc>
+    </target>
+        
+    <target name="clean"
+            description="Delete old build and doc directories">
+        <delete dir="${classes.dir}"/>
+        <delete dir="${docs.dir}"/>
+        <delete dir="META-INF"/>
+        <delete file="MANIFEST.MF"/>
+    </target>
+</project>
